@@ -6,8 +6,9 @@ export default function Index() {
     <View style={styles.container}>
       <Text style={styles.title}>Hello</Text>
 
-      <Link href="/(auth)/signup">Signup</Link>
+      <Link href="/signup">Signup</Link>
       <Link href="/(auth)">Login</Link>
+
     </View>
   );
 }
@@ -18,5 +19,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  title: { color: "blue" },
+  title: {
+    color: "blue",
+  },
 });
