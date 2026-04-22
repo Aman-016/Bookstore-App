@@ -6,17 +6,24 @@ const API_URL =
   "https://bookstore-app-bdiz.onrender.com/api";
 
 const job = new cron.CronJob("*/14 * * * *", function () {
-  https
-    .get(API_URL, (res) => {
-      if (res.statusCode === 200) {
-        console.log("GET request sent successfully");
-      } else {
-        console.log("GET request failed", res.statusCode);
-      }
-    })
-    .on("error", (e) =>
-      console.error("Error while sending request", e)
-    );
+  console.log("Cron calling URL:", API_URL);
+
+  const req = https.get(API_URL, (res) => {
+    if (res.statusCode === 200) {
+      console.log("GET request sent successfully");
+    } else {
+      console.log("GET request failed:", res.statusCode);
+    }
+  });
+
+  req.on("error", (err) => {
+    console.log("Keep-alive error:", err.code);
+  });
+
+  req.setTimeout(10000, () => {
+    console.log("Request timeout");
+    req.destroy();
+  });
 });
 
 export default job;

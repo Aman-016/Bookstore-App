@@ -43,7 +43,7 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true });
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
+      const response = await fetch(`https://bookstore-app-bdiz.onrender.com/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
