@@ -10,8 +10,9 @@ export const useAuthStore = create((set) => ({
 
   register: async (username, email, password) => {
     set({ isLoading: true });
+
     try {
-      const response = await fetch("https://bookstore-app-bdiz.onrender.com/auth/register", {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,14 +26,20 @@ export const useAuthStore = create((set) => ({
 
       const data = await response.json();
 
-      if (!response.ok) throw new Error(data.message || "Something went wrong");
+      if (!response.ok)
+        throw new Error(data.message || "Something went wrong");
 
       await AsyncStorage.setItem("user", JSON.stringify(data.user));
       await AsyncStorage.setItem("token", data.token);
 
-      set({ token: data.token, user: data.user, isLoading: false });
+      set({
+        token: data.token,
+        user: data.user,
+        isLoading: false,
+      });
 
       return { success: true };
+
     } catch (error) {
       set({ isLoading: false });
       return { success: false, error: error.message };
@@ -43,7 +50,7 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true });
 
     try {
-      const response = await fetch(`https://bookstore-app-bdiz.onrender.com/auth/login`, {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,14 +63,20 @@ export const useAuthStore = create((set) => ({
 
       const data = await response.json();
 
-      if (!response.ok) throw new Error(data.message || "Something went wrong");
+      if (!response.ok)
+        throw new Error(data.message || "Something went wrong");
 
       await AsyncStorage.setItem("user", JSON.stringify(data.user));
       await AsyncStorage.setItem("token", data.token);
 
-      set({ token: data.token, user: data.user, isLoading: false });
+      set({
+        token: data.token,
+        user: data.user,
+        isLoading: false,
+      });
 
       return { success: true };
+
     } catch (error) {
       set({ isLoading: false });
       return { success: false, error: error.message };
@@ -77,8 +90,10 @@ export const useAuthStore = create((set) => ({
       const user = userJson ? JSON.parse(userJson) : null;
 
       set({ token, user });
+
     } catch (error) {
       console.log("Auth check failed", error);
+
     } finally {
       set({ isCheckingAuth: false });
     }
@@ -87,6 +102,10 @@ export const useAuthStore = create((set) => ({
   logout: async () => {
     await AsyncStorage.removeItem("token");
     await AsyncStorage.removeItem("user");
-    set({ token: null, user: null });
+
+    set({
+      token: null,
+      user: null,
+    });
   },
 }));
