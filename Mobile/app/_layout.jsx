@@ -13,28 +13,37 @@ export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
 
-  const { checkAuth, user, token } = useAuthStore();
+  const { checkAuth, user, token, isCheckingAuth } = useAuthStore();
 
   const [fontsLoaded] = useFonts({
-    "JetBrainsMono-Medium": require("../assets/fonts/JetBrainsMono-Medium.ttf"),
+    "JetBrainsMono-Medium": require(
+      "../assets/fonts/JetBrainsMono-Medium.ttf"
+    ),
   });
 
+  // Hide splash when fonts load
   useEffect(() => {
     if (fontsLoaded) SplashScreen.hideAsync();
   }, [fontsLoaded]);
 
+  // Run auth check once
   useEffect(() => {
     checkAuth();
   }, []);
 
-  // handle navigation based on the auth state
+  // Safe navigation AFTER auth check
   useEffect(() => {
+    if (isCheckingAuth) return;
+
     const inAuthScreen = segments[0] === "(auth)";
     const isSignedIn = user && token;
 
-    if (!isSignedIn && !inAuthScreen) router.replace("/(auth)");
-    else if (isSignedIn && inAuthScreen) router.replace("/(tabs)");
-  }, [user, token, segments]);
+    if (!isSignedIn && !inAuthScreen) {
+      router.replace("/(auth)");
+    } else if (isSignedIn && inAuthScreen) {
+      router.replace("/(tabs)");
+    }
+  }, [user, token, segments, isCheckingAuth]);
 
   return (
     <SafeAreaProvider>
@@ -44,6 +53,7 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)" />
         </Stack>
       </SafeScreen>
+
       <StatusBar style="dark" />
     </SafeAreaProvider>
   );
