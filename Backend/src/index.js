@@ -12,9 +12,18 @@ const PORT = process.env.PORT || 3001;
 
 /* Middleware */
 app.use(cors());
-app.use(express.json());
 
-/* Health check route (for cron / browser test) */
+/* IMPORTANT — Increase request size limit */
+app.use(express.json({
+  limit: "50mb"
+}));
+
+app.use(express.urlencoded({
+  limit: "50mb",
+  extended: true
+}));
+
+/* Health check route */
 app.get("/api", (req, res) => {
   res.status(200).json({
     message: "API is running",
@@ -25,14 +34,13 @@ app.get("/api", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 
-/* Start server after DB connection */
+/* Start server */
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
 
-    /* Start cron AFTER server starts */
     job.start();
   })
   .catch((err) => {
